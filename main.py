@@ -7,7 +7,7 @@ from queue import Queue
 from device import Jetson
 from LedProcess import sendDataToWrite
 from screen import Ekran
-from commonModules.dbManage import DatabaseManager
+from commonModules.dbmanage import DatabaseManager
 from argParser import parseArguments
 
 import time
@@ -24,31 +24,31 @@ def main():
     None
     """
 
-    parsedArgs = parseArguments()
+    parsedArgs = parseArguments() # Komut satırından gelen FPS gibi değerleri alır.
+                                    # argParser.py modülünde detaylıca açıklanmıştır.
 
-    led = Ekran('/dev/ttyUSB1')
+    led = Ekran('/dev/ttyUSB1') # USB1 portundan ekranı başlatır.
 
-    db_manager = DatabaseManager()
-    device = Jetson()
-    counter = ObjectCounter(db_manager, 0)
-    personCamIp, bicycleCamIp0 = counter.cfg.getIpSource()
+    db_manager = DatabaseManager() # Veritabanı yöneticisini başlatır.
+    device = Jetson() # Jetson cihazını başlatır.
+    counter = ObjectCounter(db_manager, 0) # Nesne sayacı başlatılır.
+    personCamIp, bicycleCamIp0 = counter.cfg.getIpSource() # Yaya ve Bisikleret kameralarının IP adreslerini alır.
 
 
 
-    namesOfThreads = YamlHandler("configs/threadNames.yaml")
-    threadNames = namesOfThreads.data['threadNames']
-
+    namesOfThreads = YamlHandler("configs/threadNames.yaml") # Yaml dosyasından thread isimlerini alır.
+    threadNames = namesOfThreads.data['threadNames'] # threadNames değişkenine atar.
     queue = Queue(maxsize=200)
 
 
 
-    personCam = Cam(personCamIp, 0)
+    personCam = Cam(personCamIp, 0) # Yaya kamerasını başlatır.
 
-    bicycleCam0= Cam(bicycleCamIp0, 1) 
-
-
+    bicycleCam0= Cam(bicycleCamIp0, 1) # Bisiklet kamerasını başlatır. 
 
 
+
+    # Yaya kamerasından gelen görüntüleri işlemek için thread oluşturur.
     capture_thread1 = MonitoredThread(
         target=personCam.putToFrameQueue, 
         args=(queue, parsedArgs.personCamFps), 
@@ -56,6 +56,8 @@ def main():
         critical=True
         )
 
+
+     # Bisiklet kamerasından gelen görüntüleri işlemek için thread oluşturur.
     capture_thread2 = MonitoredThread(
         target=bicycleCam0.putToFrameQueue, 
         args=(queue, parsedArgs.bicycleCamFps), 
@@ -63,7 +65,7 @@ def main():
         critical=True
         )
     
-
+    # Nesne sayacı tarafından işlenecek görüntüleri işlemek için thread oluşturur.
     processThread = MonitoredThread(
         target=counter.process_frames, 
         args=(queue,), 
@@ -83,6 +85,7 @@ def main():
     capture_thread2.start()
     processThread.start()
 
+    # Sistemin durumunu sürekli olarak güncelleyen bir döngü başlatır ve DB'ye yazar.
     while True:
         mainStatuses = {
         'CaptureThread1': capture_thread1.status,
