@@ -1,0 +1,17 @@
+[Unit]
+Description=Biscount Service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/bistek/appBiscount
+ExecStartPre=/bin/sleep 15
+ExecStart=/usr/bin/python3 /home/bistek/appBiscount/updateSunucuVeri.py
+Restart=always
+RestartSec=10
+User=bistek
+Group=bistek
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

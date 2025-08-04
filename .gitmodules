@@ -1,0 +1,3 @@
+[submodule "commonModules"]
+	path = commonModules
+	url = git@github.com:BisikletTeknolojileri/commonModules.git

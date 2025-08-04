@@ -1,0 +1,3 @@
+pyserial
+shapely>=2.0.0
+lapx>=0.5.2
