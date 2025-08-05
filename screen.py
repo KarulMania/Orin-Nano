@@ -1,19 +1,22 @@
-
+# pyserial Kütüphanesi diğer adıyla. donanımsal seri portlar (usb,com) üzerinden cihazlarla iletişim kurmayı sağlar.
 import serial
 
 
 class Ekran:
     """Sınıf oluştururken ekranın hangi porta bağlı olduğu ve hava durumu çekme için şehir bilgisini alır."""
     def __init__(self,port:str):
-        self.port = port
+        self.port = port # Led ekranın bağlı olduğu port 
         self.baudrate = 9600
         self.connection = None
         self.connect()
         print('**************************************')
+
+    # Bellek temizliği için otomatik olarak bağlantıyı kapatır
     def __del__(self):
         self.close()
         print(f"{self.port} port destructor called, connection closed if it was open.")
 
+    # Belirtilen port ve baudrate ile bağlantı kurup * gönderir.
     def connect(self):
         try:
             self.__con= serial.Serial(self.port, self.baudrate, timeout=0.1)
@@ -24,6 +27,7 @@ class Ekran:
             print(f"Error opening port: {e}")
             
 
+    # Port açıksa eğer donanım şişmesin diye kapatır.
     def close(self):
         if self.__con and self.__con.is_open:
             self.__con.close()
