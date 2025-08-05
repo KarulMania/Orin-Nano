@@ -1,17 +1,19 @@
+# Sistem donanım verilerini toplamak için jtop kütüphanesi çağırılır.
 from jtop import jtop
 class Jetson:
     def __init__(self):
         self.jetson = jtop()
-        self.jetson.start()
-        self.mode = self.isJetson()
+        self.jetson.start() # Veri toplanmaya başlanıyor.
+        self.mode = self.isJetson() # Sistem mimarisi Jetson mu (aarch64) kontrol ediliyor.
 
     #functions
-    getArchitecture = lambda self: self.getPlatform()['Machine'] 
-    isJetson = lambda self: True if self.getArchitecture() == 'aarch64' else False
-    getPlatform = lambda self: self.jetson.board['platform']
+    getArchitecture = lambda self: self.getPlatform()['Machine']
+    isJetson = lambda self: True if self.getArchitecture() == 'aarch64' else False 
+    getPlatform = lambda self: self.jetson.board['platform'] #
     getStats = lambda self: self.jetson.json(self.jetson.stats) 
     getHardware = lambda self: self.getPlatform()['Machine'] 
 
+    # Datalar virgülden sonra 2 basamaktan yuvarlanarak toplanıyor.
     def getStatus(self) -> dict:
         if self.mode:
             stats = self.jetson.stats
