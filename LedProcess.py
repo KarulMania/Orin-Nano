@@ -2,10 +2,10 @@ from screen import Ekran
 
 import time
 
-def sendDataToWrite(ekran_bisiklet, dbManager, sleepTime):
+def sendDataToWrite(ekran_bisiklet, dbManager, sleepTime): # Parametreler: bisiklet ekranı, veritabanından görüntü ve sayım verileri, kaç saniyede bir veri gönderilceğini belirleyen bekleme süresi
     while True:
         try:
-            dataToWrite = dbManager.fetch_counts_and_timestamp()
+            dataToWrite = dbManager.fetch_counts_and_timestamp() # dbManager dan sayım ve zaman bilgisini alır.
             print('✔️ Veriler veritabanından alındı', flush=True)
             if dataToWrite is not None:
                 ekran_bisiklet.message(
@@ -20,7 +20,7 @@ def sendDataToWrite(ekran_bisiklet, dbManager, sleepTime):
                 time.sleep(1)
                 continue
         except Exception as e:
-            print(f'❌ Veriler veritabanından alınamadı: {e}', flush=True)
+            print(f'❌ Veriler veritabanından alınamadı: {e}', flush=True) # flush=True, buffer beklemeden terminal çıktısını direkt göstermeye yarayan parametredir.
         
         time.sleep(sleepTime)
 
@@ -29,6 +29,6 @@ def sendDataToWrite(ekran_bisiklet, dbManager, sleepTime):
 if __name__ == "__main__":
     _ekran2 = Ekran('/dev/ttyUSB1')
     while True:
-        _ekran2.message(1111, 111111, 1, 20, 19, 0)
+        _ekran2.message(1111, 111111, 1, 20, 19, 0) 
         time.sleep(10)
 
