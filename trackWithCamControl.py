@@ -1,12 +1,12 @@
-from yamlParser import YamlHandler
-from cam import Cam
-from counter import ObjectCounter
-from threadManager import MonitoredThread
-from queue import Queue
+from yamlParser import YamlHandler # IP ve thread isimlerini yaml dosyasından okur 
+from cam import Cam # Kamera bağlantısı
+from counter import ObjectCounter # İnsan/bisiklet sayımı yapar
+from threadManager import MonitoredThread # Thread'leri yönetir
+from queue import Queue 
 import cv2
-import argparse
+import argparse # Terminalden gelen argümanları okur
 import time
-from commonModules.dbManage import DatabaseManager
+from commonModules.dbManage import DatabaseManager # Veritabanı bağlantısı
 
 def parseArguments():
     parser = argparse.ArgumentParser(description='Video processing and data sending script.')
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     parsedArgs = parseArguments()
 
-    cfg = YamlHandler("configs/config.yaml")
+    cfg = YamlHandler("configs/config.yaml") # Kamera IP'leri ve thread isimleri yaml dosyalarından okunur
     personCamIp, bicycleCamIp = cfg.getIpSource()
     namesOfThreads = YamlHandler("configs/threadNames.yaml")
     threadNames = namesOfThreads.data['threadNames']
@@ -33,14 +33,14 @@ if __name__ == "__main__":
     video_source2 = bicycleCamIp
 
     if parsedArgs.personCam:
-        personCam = Cam(personCamIp, parsedArgs.reverse)
+        personCam = Cam(personCamIp, parsedArgs.reverse) # Canlı akış için
     else:
-        personCam = Cam(video_source1, parsedArgs.reverse)
+        personCam = Cam(video_source1, parsedArgs.reverse) # Video kaydı için
         
     if parsedArgs.bicycleCam:
-        bicycleCam = Cam(bicycleCamIp, not parsedArgs.reverse)  
+        bicycleCam = Cam(bicycleCamIp, not parsedArgs.reverse) # Canlı akış için 
     else:
-        bicycleCam = Cam(video_source2, not parsedArgs.reverse)
+        bicycleCam = Cam(video_source2, not parsedArgs.reverse) # Video kaydı için
      
     db_manager = DatabaseManager()
     Counter = ObjectCounter(db_manager)
