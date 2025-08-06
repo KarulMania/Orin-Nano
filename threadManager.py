@@ -1,7 +1,9 @@
+# Python çoklu iş parçacığı modülü
+# Her thread ayrı bir modül çalışır ama aynı bellek alanını paylaşır.
 import threading
 
 class MonitoredThread(threading.Thread):
-    def __init__(self, target, args=(), kwargs=None, thread_name="MonitoredThread", critical=False):
+    def __init__(self, target, args=(), kwargs=None, thread_name="MonitoredThread", critical=False): # Target --> thread'in çalıştıracağı fonksiyon örneğin putToFrameQueue
         super().__init__(target=target, args=args, kwargs=kwargs, name=thread_name)
         self.stopped = threading.Event()
         self.kwargs = kwargs if kwargs is not None else {}
@@ -12,7 +14,7 @@ class MonitoredThread(threading.Thread):
         try:
             self.status = 'running'
             if self._target:  # Hedef işlev kontrolü
-                self._target(*self._args, **self._kwargs)
+                self._target(*self._args, **self._kwargs) # Hedef fonksiyon çağrılır ve başlatılır
         except Exception as e:
             self.status = f'error: {e}'
             print(f"Thread {self.name} encountered an error: {e}")
@@ -30,8 +32,8 @@ class MonitoredThread(threading.Thread):
 
     def stop(self):
         self.stopped.set()
-        if self.is_alive():
-            self.stop()
+        if self.is_alive(): # Thread hala çalışıyorsa recursive olarak stop() çağırır
+            self.stop() 
 
     def __del__(self):
         if self.is_alive():
